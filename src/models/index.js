@@ -1,11 +1,28 @@
 import path from 'path';
 import Sequelize from 'sequelize';
-import configObj from '../config/db.js';
+import configObj from '../config/config.cjs';
 
 const env = process.env.NODE_ENV || 'development';
 const config = configObj[env];
+let sequelize;
 
-const sequelize = new Sequelize.Sequelize(config.database, config.username, config.password, config);
+if (env === "production") {
+  // Use DATABASE_URL and ssl
+  sequelize = new Sequelize(config.url, {
+    dialect: "postgres",
+    dialectOptions: config.dialectOptions,
+    logging: false, // optional
+  });
+} else {
+  // Development
+  sequelize = new Sequelize(config.database, config.username, config.password, {
+    host: config.host,
+    port: config.port,
+    dialect: "postgres",
+    logging: console.log,
+  });
+}
+
 
 const db = {};
 db.sequelize = sequelize;
