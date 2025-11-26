@@ -1,6 +1,6 @@
 import path from 'path';
 import Sequelize from 'sequelize';
-import configObj from '../config/config.cjs';
+import configObj from '../config/config.js';
 
 const env = process.env.NODE_ENV || 'development';
 const config = configObj[env];
@@ -19,6 +19,7 @@ if (env === "production") {
     host: config.host,
     port: config.port,
     dialect: "postgres",
+    dialectOptions: config.dialectOptions,
     logging: console.log,
   });
 }
@@ -26,7 +27,6 @@ if (env === "production") {
 
 const db = {};
 db.sequelize = sequelize;
-db.Sequelize = Sequelize;
 
 // Import models
 import UserModel from './user.js';

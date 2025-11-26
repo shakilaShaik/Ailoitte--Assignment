@@ -12,8 +12,8 @@ async function start() {
     // Do not sync in production; use migrations
     await db.sequelize.sync(); // safe for development - creates missing tables
     app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-      console.log(`Swagger docs: http://localhost:${PORT}/api-docs`);
+      // console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`Swagger docs${PORT}`);
     });
   } catch (err) {
     console.error('Failed to start app', err);
