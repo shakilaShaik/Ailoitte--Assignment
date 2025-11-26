@@ -1,8 +1,7 @@
 import app from './app.js';
 import dotenv from 'dotenv';
 import db from './models/index.js';
-//  import {seed} from './seed.js'
-dotenv.config();
+ dotenv.config();
 
 const PORT = process.env.PORT || 4000;
 

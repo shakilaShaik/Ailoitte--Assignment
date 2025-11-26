@@ -1,92 +1,105 @@
-import bcrypt from 'bcrypt';
-import { Sequelize } from 'sequelize';
-import { User, Category, Product, Cart, Order, OrderItem } from '../models/index.cjs';
-import faker from 'faker'; // npm install faker
+// seed.js
+import bcrypt from "bcrypt";
+import db from "../src/models/index.js";   // <-- uses your existing models & sequelize instance
+import { faker } from "@faker-js/faker";
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASS,
-  {
-    host: process.env.DB_HOST,
-    dialect: 'postgres',
-  }
-);
+const { sequelize, User, Category, Product, Cart, CartItem, Order, OrderItem } = db;
 
- async function seed() {
+async function seed() {
   try {
-    await sequelize.sync({ force: true }); // WARNING: drops tables and recreates
+    console.log("⏳ Syncing database...");
+    await sequelize.sync({ force: true });
 
-    // --- Users ---
-    const hashedPassword = await bcrypt.hash('password123', 10);
+    // ---------------------------------------------------------
+    // USERS
+    // ---------------------------------------------------------
+    const hashedPassword = await bcrypt.hash("password123", 10);
+
     const admin = await User.create({
-      name: 'Admin User',
-      email: 'admin@example.com',
+      name: "Admin User",
+      email: "admin@example.com",
       password: hashedPassword,
-      role: 'admin',
+      role: "admin",
     });
 
     const customer = await User.create({
-      name: 'John Doe',
-      email: 'john@example.com',
+      name: "John Doe",
+      email: "john1@example.com",
       password: hashedPassword,
-      role: 'customer',
+      role: "customer",
     });
 
-    // --- Categories ---
-    const electronics = await Category.create({ name: 'Electronics' });
-    const clothing = await Category.create({ name: 'Clothing' });
+    // ---------------------------------------------------------
+    // CATEGORIES
+    // ---------------------------------------------------------
+    const electronics = await Category.create({ name: "Electronics" });
+    const clothing = await Category.create({ name: "Clothing" });
 
-    // --- Products ---
+    // ---------------------------------------------------------
+    // PRODUCTS
+    // ---------------------------------------------------------
     const products = [];
 
-    // Create 50 products for Electronics
-    for (let i = 1; i <= 50; i++) {
-      const product = await Product.create({
-        name: faker.commerce.productName(),
-        price: parseFloat(faker.commerce.price(50, 1500, 2)),
-        stock: Math.floor(Math.random() * 100) + 1,
-        categoryId: electronics.id,
-      });
-      products.push(product);
+    for (let i = 0; i < 50; i++) {
+      products.push(
+        await Product.create({
+          name: faker.commerce.productName(),
+          price: parseFloat(faker.commerce.price(50, 1500)),
+          stock: faker.number.int({ min: 1, max: 100 }),
+          categoryId: electronics.id,
+        })
+      );
     }
 
-    // Create 50 products for Clothing
-    for (let i = 1; i <= 50; i++) {
-      const product = await Product.create({
-        name: faker.commerce.productName(),
-        price: parseFloat(faker.commerce.price(10, 200, 2)),
-        stock: Math.floor(Math.random() * 200) + 1,
-        categoryId: clothing.id,
-      });
-      products.push(product);
+    for (let i = 0; i < 50; i++) {
+      products.push(
+        await Product.create({
+          name: faker.commerce.productName(),
+          price: parseFloat(faker.commerce.price(10, 200)),
+          stock: faker.number.int({ min: 1, max: 200 }),
+          categoryId: clothing.id,
+        })
+      );
     }
 
-    // --- Cart (add one random product to customer cart) ---
-    const randomProduct = products[Math.floor(Math.random() * products.length)];
-    await Cart.create({
+    // ---------------------------------------------------------
+    // CART + CART ITEMS
+    // ---------------------------------------------------------
+    const customerCart = await Cart.create({
       userId: customer.id,
-      productId: randomProduct.id,
-      quantity: 2,
-      priceAtAdding: randomProduct.price,
     });
 
-    // --- Orders ---
+    const randomProduct = products[Math.floor(Math.random() * products.length)];
+
+    await CartItem.create({
+      cartId: customerCart.id,
+      productId: randomProduct.id,
+      quantity: 2,
+      price: randomProduct.price,
+    });
+
+    // ---------------------------------------------------------
+    // ORDER + ORDER ITEMS
+    // ---------------------------------------------------------
     const order = await Order.create({
       userId: customer.id,
       totalAmount: randomProduct.price * 2,
     });
 
-    await order.createOrderItem({
+    await OrderItem.create({
+      orderId: order.id,
       productId: randomProduct.id,
       quantity: 2,
-      priceAtOrder: randomProduct.price,
+      price: randomProduct.price,
     });
 
-    console.log('✅ 100 Products (50 per category) and demo data seeded successfully!');
+    // ---------------------------------------------------------
+    // DONE
+    // ---------------------------------------------------------
+    console.log("✅ Seed completed: Users, Categories, Products, Cart, Orders created!");
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error seeding demo data:', error);
+    console.error("❌ Error seeding:", error);
     process.exit(1);
   }
 }

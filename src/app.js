@@ -13,6 +13,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
+
+
+
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
@@ -20,7 +24,11 @@ const swaggerDefinition = {
     version: '1.0.0',
     description: 'API docs for E-Commerce assignment'
   },
-  servers: [{ url: 'https://ailoitte-assignment.onrender.com/' }],
+  servers: [ {
+    url: process.env.NODE_ENV === "production" 
+      ? process.env.PROD_API_URL 
+      : "http://localhost:4000"
+  }],
   components: {
     securitySchemes: {
       bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }
