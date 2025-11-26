@@ -20,7 +20,7 @@ const swaggerDefinition = {
     version: '1.0.0',
     description: 'API docs for E-Commerce assignment'
   },
-  servers: [{ url: `http://localhost:${process.env.PORT || 4000}` }],
+  servers: [{ url: 'https://ailoitte-assignment.onrender.com/' }],
   components: {
     securitySchemes: {
       bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }
