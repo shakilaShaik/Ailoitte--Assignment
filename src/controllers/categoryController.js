@@ -1,4 +1,4 @@
-import db from '../models/index.js';
+import db from "../models/index.js";
 
 export async function createCategory(req, res) {
   try {
@@ -7,7 +7,7 @@ export async function createCategory(req, res) {
     return res.status(201).json(cat);
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: "Server error" });
   }
 }
 
@@ -15,12 +15,12 @@ export async function updateCategory(req, res) {
   try {
     const id = req.params.id;
     const cat = await db.Category.findByPk(id);
-    if (!cat) return res.status(404).json({ message: 'Not found' });
+    if (!cat) return res.status(404).json({ message: "Not found" });
     await cat.update(req.body);
     return res.json(cat);
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: "Server error" });
   }
 }
 
@@ -28,12 +28,12 @@ export async function deleteCategory(req, res) {
   try {
     const id = req.params.id;
     const cat = await db.Category.findByPk(id);
-    if (!cat) return res.status(404).json({ message: 'Not found' });
+    if (!cat) return res.status(404).json({ message: "Not found" });
     await cat.destroy();
-    return res.json({ message: 'Deleted' });
+    return res.json({ message: "Deleted" });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: "Server error" });
   }
 }
 

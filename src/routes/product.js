@@ -111,7 +111,7 @@ router.post(
  * @swagger
  * /api/products/{id}:
  *   put:
- *     summary: Update product (Admin only)
+ *     summary: Update an existing product (Admin only)
  *     tags: [Products]
  *     security:
  *       - bearerAuth: []
@@ -121,12 +121,40 @@ router.post(
  *       - in: path
  *         name: id
  *         required: true
- *         schema: { type: integer }
+ *         description: Product ID
+ *         schema:
+ *           type: integer
+ *       - in: formData
+ *         name: name
+ *         type: string
+ *         required: false
+ *         description: Updated product name
+ *       - in: formData
+ *         name: description
+ *         type: string
+ *         required: false
+ *         description: Updated product description
+ *       - in: formData
+ *         name: price
+ *         type: number
+ *         required: false
+ *         description: Updated product price
+ *       - in: formData
+ *         name: image
+ *         type: file
+ *         required: false
+ *         description: Upload a new product image (Cloudinary)
  *     responses:
- *       200: { description: Product updated successfully }
- *       401: { description: Unauthorized }
- *       403: { description: Admin access required }
- *       404: { description: Product not found }
+ *       200:
+ *         description: Product updated successfully
+ *       401:
+ *         description: Unauthorized – missing or invalid token
+ *       403:
+ *         description: Admin access required
+ *       404:
+ *         description: Product not found
+ *       500:
+ *         description: Server error
  */
 router.put('/:id', auth, isAdmin, upload.single('image'), ProductController.updateProduct);
 

@@ -18,3 +18,4 @@ export function uploadToCloudinary(file) {
     streamifier.createReadStream(file.buffer).pipe(upload_stream);
   });
 }
+
